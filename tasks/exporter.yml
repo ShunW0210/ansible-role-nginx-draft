@@ -1,25 +1,24 @@
 ---
 - name: create system group
   group:
-    name: nginx-exp
+    name: {{ nginx_group }}
     state: present
   become: true
 
 - name: create system user
   user:
-    name: nginx-exp
+    name: {{ nginx_user }}
     state: present
     shell: /bin/bash
-    groups: nginx-exp
+    groups: {{ nginx_group }}
   become: true
 
 - name: DL nginx-exporter
   get_url:
     url: >
       https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v{{ prometheus_version }}
-      /nginx-prometheus-exporter-{{ prometheus_version }}-linux-amd64.tar.gz
+/nginx-prometheus-exporter-{{ prometheus_version }}-linux-amd64.tar.gz
     dest: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
-  delegate_to: localhost
   become: true
 
 - name: extract nginx-exporter
@@ -27,7 +26,7 @@
     src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
     dest: "/tmp"
     creates: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/promethus"
-  delegate_to: localhost
+  remote_src: true
   become: true
 
 - name: Set exporter service file to the location
