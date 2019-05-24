@@ -4,7 +4,6 @@
   rpm_key:
     key: "{{ nginx_signing_key }}"
 
-
 - name: add nginx repository
   become: true
   yum_repository:
@@ -54,3 +53,20 @@
           deny all;
       }
   become: true
+
+- name: Check GET request to port 9113/metrics
+  uri:
+    url: http://localhost:9113/metrics
+    method: GET
+    return_content: yes
+  register: this
+  failed_when: "'nginx_up 1' not in this.content"
+  become: true
+
+- name: Check GET request to port 80 with uri
+  uri:
+    url: http://localhost:80
+    method: GET
+    status_code: 200
+  become: true
+
