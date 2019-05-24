@@ -58,7 +58,7 @@
   uri:
     url: http://localhost:9113/metrics
     method: GET
-    return_content: yes
+    return_content: true
   register: this
   failed_when: "'nginx_up 1' not in this.content"
   become: true
@@ -69,4 +69,3 @@
     method: GET
     status_code: 200
   become: true
-
