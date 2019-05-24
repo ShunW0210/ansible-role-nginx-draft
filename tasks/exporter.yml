@@ -34,12 +34,11 @@
     dest: /etc/systemd/system/nginx_exporter.service
   become: true
  
-
 - name: Start and Enable ngixn exporter
-  servie:
+  service:
     name: nginx_exporter
     state: started
-    enabled: yes
+    enabled: true
 
 - name: set rpm_key
   become: true
