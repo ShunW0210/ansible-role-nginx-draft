@@ -15,7 +15,9 @@
 
 - name: DL nginx-exporter
   get_url:
-    url: "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v{{ prometheus_version }}/nginx-prometheus-exporter-{{ prometheus_version }}-linux-amd64.tar.gz"
+    url: >
+      "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v{{ prometheus_version }}
+       /nginx-prometheus-exporter-{{ prometheus_version }}-linux-amd64.tar.gz"
     dest: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
     delegate_to: localhost
   become: true
