@@ -1,4 +1,46 @@
 ---
+- name: create system group
+  group:
+    name: nginx-exp
+    state: present
+  become: true
+
+- name: create system user
+  user:
+    name: nginx-exp
+    state: present
+    shell: /bin/bash
+    groups: nginx-exp
+  become: true
+
+
+- name: DL nginx-exporter
+  get_url:
+    url: "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v{{ prometheus_version }}/nginx-prometheus-exporter-{{ prometheus_version }}-linux-amd64.tar.gz"
+    dest: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    delegate_to: localhost
+  become: true
+
+- name: extract nginx-exporter
+  unarchive:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+    dest: "/tmp"
+    creates: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/promethus"
+  delegate_to: localhost
+  become: true
+
+- template:
+    src: templates/nginx_exporter.service
+    dest: /etc/systemd/system/nginx_exporter.service
+  become: true
+ 
+
+- name: Start and Enable ngixn exporter
+  servie:
+    name: nginx_exporter
+    state: started
+    enabled: yes
+
 - name: set rpm_key
   become: true
   rpm_key:
@@ -45,7 +87,7 @@
 - name: Add content to default.conf
   blockinfile:
     path: /etc/nginx/conf.d/default.conf
-    insertbefore: "#error_page  404              /404.html;"
+    insertbefore: "    #error_page  404              /404.html;"
     block: |
       location /nginx_status {
           stub_status;
