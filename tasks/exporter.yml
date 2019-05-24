@@ -29,7 +29,7 @@
   delegate_to: localhost
   become: true
 
-- name: Set exporter service file to the location 
+- name: Set exporter service file to the location
   template:
     src: templates/nginx_exporter.service
     dest: /etc/systemd/system/nginx_exporter.service
