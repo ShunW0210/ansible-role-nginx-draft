@@ -1,32 +1,30 @@
 ---
 - name: create system group
   group:
-    name: {{ nginx_group }}
+    name: "{{ nginx_group }}"
     state: present
   become: true
 
 - name: create system user
   user:
-    name: {{ nginx_user }}
+    name: "{{ nginx_user }}"
     state: present
     shell: /bin/bash
-    groups: {{ nginx_group }}
+    groups: "{{nginx_group}}"
   become: true
 
 - name: DL nginx-exporter
   get_url:
-    url: >
-      https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v{{ prometheus_version }}
-/nginx-prometheus-exporter-{{ prometheus_version }}-linux-amd64.tar.gz
+    url: "https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v{{ prometheus_version }}/nginx-prometheus-exporter-{{ prometheus_version }}-linux-amd64.tar.gz"
     dest: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
   become: true
 
 - name: extract nginx-exporter
   unarchive:
     src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
-    dest: "/tmp"
-    creates: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/promethus"
-  remote_src: true
+    dest: "/usr/local/bin/"
+    creates: "nginx_exporter"
+    remote_src: true
   become: true
 
 - name: Set exporter service file to the location
@@ -35,7 +33,7 @@
     dest: /etc/systemd/system/nginx_exporter.service
   become: true
 
-- name: Start and Enable ngixn exporter
+- name: Start and Enable nginx exporter
   service:
     name: nginx_exporter
     state: started
